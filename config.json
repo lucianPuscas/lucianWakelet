@@ -1,0 +1,17 @@
+{
+  "environment": {
+    "wakeletHomeProd": "",
+    "wakeletStaging": "https://staging.wakelet.com/",
+    "wakeletBlogSearch": ""
+  },
+  "desiredCapabilities": {
+    "javascriptEnabled": true,
+    "acceptSslCerts": true,
+    "browserName": "chrome",
+    "chromeOptions": {
+      "args": [
+        "--load-extension=/home/pratik/.config/google-chrome/Default/Extensions/idgpnmonknjnojddfkpgkljpfnnfcklj/2.1.2_0"
+      ]
+    }
+  }
+}
