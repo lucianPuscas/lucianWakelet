@@ -1,8 +1,7 @@
 {
   "environment": {
-    "wakeletHomeProd": "",
+    "wakeletHomeProd": "https://wakelet.com/",
     "wakeletStaging": "https://staging.wakelet.com/",
-    "wakeletBlogSearch": ""
   },
   "desiredCapabilities": {
     "javascriptEnabled": true,

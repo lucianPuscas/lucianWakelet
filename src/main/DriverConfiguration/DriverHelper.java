@@ -1,5 +1,6 @@
 package DriverConfiguration;
 
+import com.gargoylesoftware.htmlunit.javascript.host.dom.ShadowRoot;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -44,15 +45,14 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 
-
 public class DriverHelper extends EnvironmentConfig {
     public WebDriverWait wait = new WebDriverWait(driver(), 2);
     public String stagingWakelet = getTestUrl("wakeletStaging");
 
     private Object InternetExplorer;
 
-    public static final String USERNAME = "";
-    public static final String AUTOMATE_KEY = "";
+    public static final String USERNAME = "wakelet_GYv1ES";
+    public static final String AUTOMATE_KEY = "pLkxwVxqzpDxUwiXHqqX";
     public static final String remoteUrl = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
     public static final String environmentSettings = "{  \"project\": \"Wakelet production\",\n" +
             "    \"build\": \"Wakelet Production tests\",\n" +
@@ -67,11 +67,11 @@ public class DriverHelper extends EnvironmentConfig {
     }
 
     //region Enter Password to decrypt site
-    @FindBy(how = How.NAME, using = "password")
-    private WebElement daedalusPassword;
-
-    @FindBy(how = How.CSS, using = "button")
-    private WebElement passwordSubmitBtn;
+    // @FindBy(how = How.NAME, using = "password")
+    // private WebElement daedalusPassword;
+    //
+    // @FindBy(how = How.CSS, using = "button")
+    // private WebElement passwordSubmitBtn;
     //endregion
 
     /**
@@ -562,6 +562,10 @@ public class DriverHelper extends EnvironmentConfig {
      */
     public void verifyPageUrl(String url) {
         assertCurrentUrlContains(url);
+        driver().navigate().back();
+        waitForPageToLoad();
+
+
 //        assertTrue(driver().getCurrentUrl().contains(url));
     }
 
@@ -582,7 +586,7 @@ public class DriverHelper extends EnvironmentConfig {
     public void assertNewTabOpen(WebElement link, String url) {
         //get window handlers as list
         waitForPageToLoad(15);
-        assertTrue(link.getAttribute("target").equalsIgnoreCase("_blank"));
+        // assertTrue(link.getAttribute("target").equalsIgnoreCase("_blank"));
         // Find a list of open windows and get the window handles
         waitUntil(webDriver -> {
             ;
@@ -644,8 +648,87 @@ public class DriverHelper extends EnvironmentConfig {
                 .ignoring(NoSuchElementException.class);
         wait.until(ExpectedConditions.visibilityOf(element));
     }
-}
 
+
+    //region Wakelet extract selectors
+
+
+    @FindBy(how = How.TAG_NAME, using = "my-app")
+    public WebElement homePage;
+    @FindBy(how = How.TAG_NAME, using = "wk-ui-auth-app")
+    public WebElement authPage;
+
+
+    public WebElement extractElement(String elementCss) {
+        WebElement shadowRoot1 = expandRootElement(homePage);
+        WebElement root2 = shadowRoot1.findElement(By.cssSelector(".iron-lazy-selected"));
+        WebElement shadowRoot2 = expandRootElement(root2);
+        return shadowRoot2.findElement(By.cssSelector(elementCss));
+    }
+
+
+    public WebElement expandRootElement(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) driver();
+        return (WebElement) js.executeScript("return arguments[0].shadowRoot", element);
+    }
+
+    public List<WebElement> authPageExtractElements(String selectorCss) {
+        WebElement shadowRoot1 = expandRootElement(authPage);
+        WebElement root2 = shadowRoot1.findElement(By.cssSelector(".page"));
+        WebElement shadowRoot2 = expandRootElement(root2);
+        WebElement root3 = shadowRoot2.findElement(By.cssSelector(".relative.p--xxl"));
+        WebElement shadowRoot3 = expandRootElement(root3);
+        return shadowRoot3.findElements(By.cssSelector(selectorCss));
+
+    }
+
+
+    public WebElement authPageExtractElement(String selectorCss) {
+        WebElement shadowRoot1 = expandRootElement(authPage);
+        WebElement root2 = shadowRoot1.findElement(By.cssSelector(".page"));
+        WebElement shadowRoot2 = expandRootElement(root2);
+        WebElement root3 = shadowRoot2.findElement(By.cssSelector(".relative.p--xxl"));
+        WebElement shadowRoot3 = expandRootElement(root3);
+        return shadowRoot3.findElement(By.cssSelector(selectorCss));
+
+    }
+
+    public WebElement authPageExtractSocialMediaElement(String shadowTagName, String selectorCss) {
+        WebElement shadowRoot1 = expandRootElement(authPage);
+        WebElement root2 = shadowRoot1.findElement(By.cssSelector(".page"));
+        WebElement shadowRoot2 = expandRootElement(root2);
+        WebElement root3 = shadowRoot2.findElement(By.cssSelector(".relative.p--xxl"));
+        WebElement shadowRoot3 = expandRootElement(root3);
+        WebElement root4 = shadowRoot3.findElement(By.cssSelector("wk-ui-social-login"));
+        WebElement shadowRoot4 = expandRootElement(root4);
+        WebElement root5 = shadowRoot4.findElement(By.cssSelector(shadowTagName));
+        WebElement shadowRoot5 = expandRootElement(root5);
+        return shadowRoot5.findElement(By.cssSelector(selectorCss));
+
+    }
+
+
+    //endregion
+
+
+    public void assertNewTabOpenSocial(String url) {
+        //get window handlers as list
+        waitForPageToLoad(15);
+        waitUntil(webDriver -> {
+            return driver().getWindowHandles().size() == 2;
+        }, 15);
+        String oldTab = driver().getWindowHandle();
+        String newTab = driver().getWindowHandles().stream()
+                .filter(s -> !s.equals(oldTab))
+                .findFirst()
+                .orElse(null);
+        driver().switchTo().window(newTab);
+        assertCurrentUrlContains(url);
+        driver().close();
+        driver().switchTo().window(oldTab);
+    }
+
+}
 
 
 

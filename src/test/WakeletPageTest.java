@@ -16,8 +16,8 @@ import org.openqa.selenium.Platform;
 @DisplayName("Iohk.io Blog Page tests")
 @Browsers(
         chrome = {
-                @Chrome(version = "83", platform = Platform.MAC, desiredCapabilities = WakeletPageTest.environmentSettings),
-                @Chrome(version = "83", platform = Platform.WINDOWS, desiredCapabilities = WakeletPageTest.environmentSettings),
+                @Chrome(version = "91", platform = Platform.MAC, desiredCapabilities = WakeletPageTest.environmentSettings),
+                @Chrome(version = "91", platform = Platform.WINDOWS, desiredCapabilities = WakeletPageTest.environmentSettings),
         },
         firefox = {
                 @Firefox(version = "77", platform = Platform.MAC, desiredCapabilities = WakeletPageTest.environmentSettings),
@@ -29,9 +29,9 @@ import org.openqa.selenium.Platform;
 */
 //region BrowserRunnerSetup
 @RunWith(WebDriverRunner.class)
-//@Chrome(platform = Platform.ANY)
-@Firefox(platform = Platform.ANY)
-//@Edge(platform = Platform.WINDOWS)
+@Chrome(platform = Platform.MAC)
+//@Firefox(platform = Platform.MAC)
+//@Edge(platform = Platform.MAC)
 //@Safari(platform = Platform.MAC)
 //endregion
 
@@ -62,7 +62,12 @@ public class WakeletPageTest extends DriverHelper {
      */
     @Test
     public void test() {
-        blogPage.testclick();
+        blogPage.testLogin();
+    }
+
+    @Test
+    public void testSocial(){
+        blogPage.testLoginSocialMedia();
     }
 
     /**
